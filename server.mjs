@@ -1,12 +1,12 @@
 // Imports
-import express from 'express';
-import dotenv from 'dotenv';
-import connectDB from './db/conn.mjs';
+import express from "express";
+import dotenv from "dotenv";
+import connectDB from "./db/conn.mjs";
 import serverError from "./middleware/serverError.mjs";
 import morgan from "morgan";
-import cors from 'cors';
+import cors from "cors";
 import userRoutes from "./routes/userRoutes.mjs";
-
+import petRoutes from "./routes/petRoutes.mjs";
 
 // Setups
 connectDB();
@@ -28,7 +28,7 @@ app.use(express.json());
 // });
 ////////
 app.use("/api/user", userRoutes);
-
+app.use("/api/pet", petRoutes);
 
 // Error Handling Middleware
 app.use(serverError);
