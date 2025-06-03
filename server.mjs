@@ -19,6 +19,13 @@ app.use(express.json());
 
 // Routes
 
+////////
+// test route
+app.get("/", async (req, res) => {
+  res.send("Test Route");
+});
+////////
+
 // Error Handling Middleware
 app.use(serverError);
 
