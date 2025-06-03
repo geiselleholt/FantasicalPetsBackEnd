@@ -5,6 +5,8 @@ import connectDB from './db/conn.mjs';
 import serverError from "./middleware/serverError.mjs";
 import morgan from "morgan";
 import cors from 'cors';
+import userRoutes from "./routes/userRoutes.mjs";
+
 
 // Setups
 connectDB();
@@ -21,10 +23,12 @@ app.use(express.json());
 
 ////////
 // test route
-app.get("/", async (req, res) => {
-  res.send("Test Route");
-});
+// app.get("/", async (req, res) => {
+//   res.send("Test Route");
+// });
 ////////
+app.use("/api/user", userRoutes);
+
 
 // Error Handling Middleware
 app.use(serverError);
