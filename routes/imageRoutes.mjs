@@ -17,6 +17,10 @@ const router = express.Router();
 router.post("/", async (req, res, next) => {
   let { animal1, animal2 } = req.body;
 
+  if (animal1 > animal2) {
+    [animal1, animal2] = [animal2, animal1];
+  }
+
   let existing = await Image.findOne({ animal1, animal2 });
 
   if (existing) {
