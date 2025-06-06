@@ -12,22 +12,16 @@ const router = express.Router();
 //////////
 
 // @route: POST /api/pet
-// @desc:  CREATE admin data
+// @desc:  CREATE new Pet
 // @access: Public
 router.post("/", async (req, res, next) => {
-  const { name, imageUrl, description } = req.body;
+  const { name, description, image, user } = req.body;
   try {
-    const ownerId = req.user.id;
-
-    if (!name || !imageUrl) {
-      return res.status(400).json({ msg: "Missing name or image" });
-    }
-
     const newPet = await Pet.create({
       name,
-      imageUrl,
       description,
-      owner: ownerId,
+      image,
+      user,
     });
     res.status(201).json(newPet);
   } catch (error) {
@@ -35,26 +29,13 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-// @route: GET /api/pet/all
-// @desc:  READ all pets
-// @access: Public (for dev testing, not to be used on the FrontEnd)
-router.get("/all", async (req, res) => {
-  try {
-    const allpets = await Pet.find({});
-    res.json(allpets);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// @route: GET /api/pets/my
+// @route: GET /api/pet/user
 // @desc:  READ all pets for the logged-in user
 // @access: Private
-router.get("/my", auth, async (req, res, next) => {
+router.get("/user", auth, async (req, res, next) => {
   try {
-    const ownerId = req.user.id;
-    const userPets = await Pet.find({ owner: ownerId });
-
+    const userId = req.user;
+    const userPets = await Pet.find({ user: userId });
     res.status(200).json(userPets);
   } catch (error) {
     next(error);
@@ -78,16 +59,10 @@ router.get("/:id", async (req, res, next) => {
 // @access: Private
 router.put("/:id", auth, async (req, res, next) => {
   try {
-    const ownerId = req.user.id;
-    let updatedpet = await Pet.findByIdAndUpdate(
-      req.params.id,
-      ownerId,
-      req.body,
-      {
-        new: true,
-      }
-    );
-    res.json(updatedpet);
+    let updatedPet = await Pet.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.json(updatedPet);
   } catch (error) {
     next(error);
   }
@@ -98,7 +73,7 @@ router.put("/:id", auth, async (req, res, next) => {
 // @access: Private
 router.delete("/:id", auth, async (req, res, next) => {
   try {
-    let deletepet = await Pet.findByIdAndDelete(req.params.id, ownerId);
+    let deletepet = await Pet.findByIdAndDelete(req.params.id);
     res.json(deletepet);
   } catch (error) {
     next(error);

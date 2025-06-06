@@ -3,12 +3,10 @@ import mongoose from "mongoose";
 const petSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
     maxlength: 20,
   },
   description: {
     type: String,
-    required: false,
     maxlength: 200,
   },
   image: {

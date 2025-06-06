@@ -1,29 +1,28 @@
 import express from "express";
-import Hybrid from "../models/Hybrid.mjs";
 import "dotenv/config";
+import Image from "../models/ImageSchema.mjs";
 
 const router = express.Router();
 
-//////////
-// test route
+////// test route //////
 // router.get("/", async (req, res) => {
 //   res.send("Test Route ");
 // });
 //////////
 
 // @route: POST /api/image
-// @desc:  Find existing image in Hybrid db or CREATE a new image
+// @desc:  Find existing image in Image db or CREATE a new image
 // @access: Public
 
-router.post("/hybrid", async (req, res, next) => {
-  let { animal1, animal2 } = req.body;
+router.post("/", async (req, res, next) => {
+    let { animal1, animal2 } = req.body;
 
-  let existing = await Hybrid.findOne({ animal1, animal2 });
+  let existing = await Image.findOne({ animal1, animal2 });
 
   if (existing) {
     return res.status(200).json({
       imageUrl: existing.imageUrl,
-      hybridId: existing._id,
+      ImageId: existing._id,
     });
   }
 
@@ -43,7 +42,7 @@ router.post("/hybrid", async (req, res, next) => {
 
   let newImageUrl = data.output_url;
 
-  const newHybrid = await Hybrid.create({
+  const newImage = await Image.create({
     animal1: animal1,
     animal2: animal2,
     imageUrl: newImageUrl,
@@ -51,7 +50,7 @@ router.post("/hybrid", async (req, res, next) => {
 
   res.status(200).json({
     imageUrl: newImageUrl,
-    hybridId: newHybrid._id,
+    ImageId: newImage._id,
   });
 });
 

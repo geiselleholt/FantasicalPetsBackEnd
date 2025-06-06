@@ -7,6 +7,8 @@ import morgan from "morgan";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes.mjs";
 import petRoutes from "./routes/petRoutes.mjs";
+import imageRoutes from "./routes/imageRoutes.mjs";
+
 
 // Setups
 connectDB();
@@ -20,15 +22,10 @@ app.use(morgan("tiny"));
 app.use(express.json());
 
 // Routes
-
-////////
-// test route
-// app.get("/", async (req, res) => {
-//   res.send("Test Route");
-// });
-////////
 app.use("/api/user", userRoutes);
 app.use("/api/pet", petRoutes);
+app.use("/api/image", imageRoutes);
+
 
 // Error Handling Middleware
 app.use(serverError);
