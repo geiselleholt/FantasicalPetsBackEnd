@@ -73,8 +73,8 @@ router.put("/:id", auth, async (req, res, next) => {
 // @access: Private
 router.delete("/:id", auth, async (req, res, next) => {
   try {
-    let deletepet = await Pet.findByIdAndDelete(req.params.id);
-    res.json(deletepet);
+    let deletePet = await Pet.findByIdAndDelete(req.params.id);
+    res.json(deletePet);
   } catch (error) {
     next(error);
   }

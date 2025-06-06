@@ -1,6 +1,7 @@
 import express from "express";
 import "dotenv/config";
 import Image from "../models/ImageSchema.mjs";
+import images from "../utilities/imageSeedData.mjs";
 
 const router = express.Router();
 
@@ -11,11 +12,10 @@ const router = express.Router();
 //////////
 
 // @route: POST /api/image
-// @desc:  Find existing image in Image db or CREATE a new image
+// @desc:  Find existing image or CREATE a new image
 // @access: Public
-
 router.post("/", async (req, res, next) => {
-    let { animal1, animal2 } = req.body;
+  let { animal1, animal2 } = req.body;
 
   let existing = await Image.findOne({ animal1, animal2 });
 
@@ -26,7 +26,7 @@ router.post("/", async (req, res, next) => {
     });
   }
 
-  // code snippet from DeepAI API
+  ////////// code snippet from DeepAI API
   const resp = await fetch("https://api.deepai.org/api/text2img", {
     method: "POST",
     headers: {
@@ -52,6 +52,22 @@ router.post("/", async (req, res, next) => {
     imageUrl: newImageUrl,
     ImageId: newImage._id,
   });
+});
+
+// @route: GET /api/image/seed
+// @desc: Seed DB information
+// @access: Public
+router.get("/seed", async (req, res) => {
+  try {
+    await Image.deleteMany({});
+
+    await Image.create(images);
+
+    res.send("Seeded DB");
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server Error" });
+  }
 });
 
 export default router;
