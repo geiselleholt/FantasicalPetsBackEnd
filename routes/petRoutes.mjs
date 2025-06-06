@@ -14,7 +14,7 @@ const router = express.Router();
 // @route: POST /api/pet
 // @desc:  CREATE admin data
 // @access: Public
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
   const { name, imageUrl, description } = req.body;
   try {
     const ownerId = req.user.id;

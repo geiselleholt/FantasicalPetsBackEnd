@@ -14,9 +14,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function (arr) {
-        return arr.length === 3;
+        return arr.length === 2;
       },
-      message: `Please provide exactly 3 security questions.`,
+      message: `Please provide exactly 2 security questions.`,
     },
   },
 });
