@@ -46,15 +46,13 @@ router.post("/", async (req, res, next) => {
 
   let newImageUrl = data.output_url;
 
-  const newImage = await Image.create({
-    animal1: animal1,
-    animal2: animal2,
-    imageUrl: newImageUrl,
-  });
+  if (!newImageUrl) {
+    console.error(err);
+    res.status(500).json({ msg: "DeepAI did not return a valid image" });
+  }
 
   res.status(200).json({
     imageUrl: newImageUrl,
-    ImageId: newImage._id,
   });
 });
 

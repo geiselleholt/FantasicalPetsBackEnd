@@ -10,10 +10,10 @@ const router = express.Router();
 // });
 ////////////
 
-// @route: POST /api/user/register
+// @route: POST /api/user/signUp
 // @desc:  CREATE a register user route
 // @access: Public
-router.post("/register", async (req, res, next) => {
+router.post("/signUp", async (req, res, next) => {
   const { userName, password, securityQuestions } = req.body; // destructure request body
 
   try {
@@ -28,13 +28,35 @@ router.post("/register", async (req, res, next) => {
       return res.status(400).json({ msg: "User name already exists" });
     }
 
+    // Create a new user, do not save to DB just yet
     user = new User({ userName, password, securityQuestions });
 
+    const salt = await bcrypt.genSalt(10);
+
+    user.password = await bcrypt.hash(password, salt);
+
+    //Save user to create unique mongoDB _id
     await user.save();
 
-    res.status(201).json({ user });
+    const payload = {
+      user: {
+        id: user._id,
+      },
+    };
+
+    jwt.sign(
+      payload,
+      process.env.jwtSecret,
+      { expiresIn: 360000 },
+      (err, token) => {
+        if (err) throw err;
+
+        res.status(201).json({ token });
+      }
+    );
   } catch (error) {
-    next(error);
+    console.error(err);
+    res.status(500).json({ msg: "Server Error" });
   }
 });
 
@@ -61,8 +83,9 @@ router.post("/login", async (req, res, next) => {
     }
 
     res.status(200).json({ userId: user._id });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server Error" });
   }
 });
 
@@ -73,8 +96,9 @@ router.get("/all", async (req, res) => {
   try {
     let allUsers = await User.find({});
     res.status(200).json(allUsers);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server Error" });
   }
 });
 

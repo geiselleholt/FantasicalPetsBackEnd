@@ -12,11 +12,13 @@ const router = express.Router();
 //////////
 
 // @route: POST /api/pet
-// @desc:  CREATE new Pet
-// @access: Public
-router.post("/", async (req, res, next) => {
-  const { name, description, image, user } = req.body;
+// @desc:  CREATE new Pet for a user
+// @access: Private
+router.post("/", auth, async (req, res) => {
+  let { name, description, animal1, animal2, imageUrl } = req.body;
   try {
+    const user = req.user.id;
+
     const newPet = await Pet.create({
       name,
       description,
@@ -24,59 +26,64 @@ router.post("/", async (req, res, next) => {
       user,
     });
     res.status(201).json(newPet);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server Error" });
   }
 });
 
 // @route: GET /api/pet/user
 // @desc:  READ all pets for the logged-in user
 // @access: Private
-router.get("/user", auth, async (req, res, next) => {
+router.get("/user", auth, async (req, res) => {
   try {
     const userId = req.user;
     const userPets = await Pet.find({ user: userId });
     res.status(200).json(userPets);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server Error" });
   }
 });
 
 // @route: GET /api/pet/:id
 // @desc:  READ one pet
 // @access: Public
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", async (req, res) => {
   try {
     const onepet = await Pet.findById(req.params.id);
     res.json(onepet);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server Error" });
   }
 });
 
 // @route: PUT /api/pet/:id
 // @desc:  UPDATE one pet
 // @access: Private
-router.put("/:id", auth, async (req, res, next) => {
+router.put("/:id", auth, async (req, res) => {
   try {
     let updatedPet = await Pet.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
     res.json(updatedPet);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server Error" });
   }
 });
 
 // @route: DELETE /api/pet/:id
 // @desc:  DELETE one pet
 // @access: Private
-router.delete("/:id", auth, async (req, res, next) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     let deletePet = await Pet.findByIdAndDelete(req.params.id);
     res.json(deletePet);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server Error" });
   }
 });
 

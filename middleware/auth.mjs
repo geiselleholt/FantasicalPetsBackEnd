@@ -1,18 +1,22 @@
-export default function (req, res, next) {
-  let token = req.header("token");
+import jwt from 'jsonwebtoken';
 
+export default (req, res, next) => {
+  //Pull token out of header
+  const token = req.header('x-auth-token');
+
+  //If not token is found
   if (!token) {
-    res.status(401).json({
-      msg: "No Token, Auth Denied",
-    });
+    return res.status(401).json({ errors: [{ msg: 'No Token, Auth Denied' }] });
   }
 
-  if (token.length != 24) {
-    res.status(401).json({
-      msg: "Invalid Token, Auth Denied",
-    });
-  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  req.user = token;
-  next();
+    req.user = decoded.user;
+
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ errors: [{ msg: 'Token is not Valid' }] });
+  }
 };
