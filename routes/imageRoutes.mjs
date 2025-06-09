@@ -1,6 +1,6 @@
 import express from "express";
 import "dotenv/config";
-import Image from "../models/ImageSchema.mjs";
+import Image from "../models/imageSchema.mjs";
 import images from "../utilities/imageSeedData.mjs";
 
 const router = express.Router();

@@ -1,5 +1,6 @@
 import express from "express";
 import Pet from "../models/petSchema.mjs";
+import Image from "../models/imageSchema.mjs";
 import auth from "../middleware/auth.mjs";
 
 const router = express.Router();
@@ -17,18 +18,36 @@ const router = express.Router();
 router.post("/", auth, async (req, res) => {
   let { name, description, animal1, animal2, imageUrl } = req.body;
   try {
-    const user = req.user.id;
+    const userId = req.user.id;
+
+    if (animal1 > animal2) {
+      [animal1, animal2] = [animal2, animal1];
+    }
+
+    let image = await Image.findOne({
+      animal1: animal1,
+      animal2: animal2,
+    });
+
+    if (!image) {
+      newImage = await Image.create({
+        animal1: animal1,
+        animal2: animal2,
+        imageUrl: imageUrl,
+      });
+    }
 
     const newPet = await Pet.create({
       name,
       description,
-      image,
-      user,
+      image: newImage._id,
+      user: userId,
     });
+
     res.status(201).json(newPet);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Server Error" });
+    res.status(500).json({ msg: "Server Error Creating Pet" });
   }
 });
 
@@ -37,12 +56,12 @@ router.post("/", auth, async (req, res) => {
 // @access: Private
 router.get("/user", auth, async (req, res) => {
   try {
-    const userId = req.user;
+    const userId = req.user.id;
     const userPets = await Pet.find({ user: userId });
     res.status(200).json(userPets);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Server Error" });
+    res.status(500).json({ msg: "Server Error Getting All Pets for one User" });
   }
 });
 

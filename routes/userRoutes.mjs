@@ -1,4 +1,6 @@
 import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import User from "../models/userSchema.mjs";
 
 const router = express.Router();
@@ -13,7 +15,7 @@ const router = express.Router();
 // @route: POST /api/user/signUp
 // @desc:  CREATE a register user route
 // @access: Public
-router.post("/signUp", async (req, res, next) => {
+router.post("/signUp", async (req, res) => {
   const { userName, password, securityQuestions } = req.body; // destructure request body
 
   try {
@@ -28,42 +30,42 @@ router.post("/signUp", async (req, res, next) => {
       return res.status(400).json({ msg: "User name already exists" });
     }
 
-    // Create a new user, do not save to DB just yet
     user = new User({ userName, password, securityQuestions });
 
     const salt = await bcrypt.genSalt(10);
 
     user.password = await bcrypt.hash(password, salt);
 
-    //Save user to create unique mongoDB _id
     await user.save();
 
     const payload = {
-      user: {
-        id: user._id,
-      },
+      id: user._id,
     };
 
     jwt.sign(
       payload,
-      process.env.jwtSecret,
+      process.env.JWT_SECRET,
       { expiresIn: 360000 },
       (err, token) => {
-        if (err) throw err;
+        if (err) {
+          return res.status(500).json({
+            msg: "Could not generate JWT authentication token",
+          });
+        }
 
         res.status(201).json({ token });
       }
     );
-  } catch (error) {
+  } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Server Error" });
+    res.status(500).json({ msg: "Server Error during Sign Up" });
   }
 });
 
-// @route: POST /api/user/login
+// @route: POST /api/user/signIn
 // @desc:  Authenticate user and log them in
 // @access: Public
-router.post("/login", async (req, res, next) => {
+router.post("/signIn", async (req, res) => {
   const { userName, password } = req.body; // destructure request body
 
   try {
@@ -78,19 +80,39 @@ router.post("/login", async (req, res, next) => {
       return res.status(400).json({ msg: "Invalid Credentials" });
     }
 
-    if (password != user.password) {
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
       return res.status(400).json({ msg: "Invalid Credentials" });
     }
 
-    res.status(200).json({ userId: user._id });
+    const payload = {
+      id: user._id,
+    };
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: 360000 },
+      (err, token) => {
+        if (err) {
+          return res.status(500).json({
+            msg: "Could not generate JWT authentication token",
+          });
+        }
+        res.status(200).json({
+          token,
+          userId: user._id,
+        });
+      }
+    );
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Server Error" });
+    res.status(500).json({ msg: "Server Error during Sign In" });
   }
 });
 
 // @route: GET /api/user/all
-// @desc:  READ all user data
+// @desc:  READ all users
 // @access: Public (for dev testing, not to be used on the FrontEnd)
 router.get("/all", async (req, res) => {
   try {
@@ -98,7 +120,7 @@ router.get("/all", async (req, res) => {
     res.status(200).json(allUsers);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Server Error" });
+    res.status(500).json({ msg: "Server Error getting all users" });
   }
 });
 
