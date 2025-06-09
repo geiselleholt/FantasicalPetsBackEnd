@@ -18,6 +18,7 @@ const router = express.Router();
 router.post("/", auth, async (req, res) => {
   let { name, description, animal1, animal2, imageUrl } = req.body;
   try {
+    console.log(req.user);
     const userId = req.user.id;
 
     if (animal1 > animal2) {
@@ -30,7 +31,7 @@ router.post("/", auth, async (req, res) => {
     });
 
     if (!image) {
-      newImage = await Image.create({
+      image = await Image.create({
         animal1: animal1,
         animal2: animal2,
         imageUrl: imageUrl,
@@ -40,7 +41,7 @@ router.post("/", auth, async (req, res) => {
     const newPet = await Pet.create({
       name,
       description,
-      image: newImage._id,
+      image: image._id,
       user: userId,
     });
 
@@ -70,8 +71,10 @@ router.get("/user", auth, async (req, res) => {
 // @access: Public
 router.get("/:id", async (req, res) => {
   try {
-    const onepet = await Pet.findById(req.params.id);
-    res.json(onepet);
+    console.log(req.params.id)
+    const onePet = await Pet.findById(req.params.id);
+    console.log(onePet)
+    res.json(onePet);
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server Error" });
