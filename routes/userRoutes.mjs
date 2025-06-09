@@ -19,10 +19,12 @@ const router = express.Router();
 // @desc:  CREATE a register user route
 // @access: Public
 router.post("/signUp", async (req, res) => {
-  const { userName, password, securityQuestions } = req.body; // destructure request body
+  const { userName, password, securityQuestion1, securityQuestion2 } = req.body; // destructure request body
 
   try {
-    if (!userName || !password || !securityQuestions) {
+    if (!userName || !password || !securityQuestion1 || !securityQuestion2 ||
+        !securityQuestion1.question || !securityQuestion1.answer ||
+        !securityQuestion2.question || !securityQuestion2.answer) {
       return res.status(400).json({
         msg: "Fill in all required fields",
       });
@@ -33,7 +35,7 @@ router.post("/signUp", async (req, res) => {
       return res.status(400).json({ msg: "User name already exists" });
     }
 
-    user = new User({ userName, password, securityQuestions });
+    user = new User({ userName, password, securityQuestion1, securityQuestion2 });
 
     const salt = await bcrypt.genSalt(10);
 
@@ -114,17 +116,6 @@ router.post("/signIn", async (req, res) => {
   }
 });
 
-// @route: GET /api/user/all
-// @desc:  READ all users
-// @access: Public (for dev testing, not to be used on the FrontEnd)
-router.get("/all", async (req, res) => {
-  try {
-    let allUsers = await User.find({});
-    res.status(200).json(allUsers);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Server Error getting all users" });
-  }
-});
+
 
 export default router;
