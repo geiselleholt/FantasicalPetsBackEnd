@@ -52,6 +52,7 @@ Create a practical MERN stack application that, solves problem, makes your life 
 
 ### Wire Frame for Data Structure:
 - <img src="src/images/dataStructure.png" alt="Wireframe of Data Structure" width="400">
+- ![alt](dataStructure.png)
 - I didn't stick with this but it was a good start
 
 ### Routes:
