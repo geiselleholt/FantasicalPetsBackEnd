@@ -58,26 +58,11 @@ router.post("/", auth, async (req, res) => {
 router.get("/user", auth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const userPets = await Pet.find({ user: userId });
+    const userPets = await Pet.find({ user: userId }).populate("image");
     res.status(200).json(userPets);
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server Error Getting All Pets for one User" });
-  }
-});
-
-// @route: GET /api/pet/:id
-// @desc:  READ one pet
-// @access: Public
-router.get("/:id", async (req, res) => {
-  try {
-    console.log(req.params.id)
-    const onePet = await Pet.findById(req.params.id);
-    console.log(onePet)
-    res.json(onePet);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Server Error" });
   }
 });
 

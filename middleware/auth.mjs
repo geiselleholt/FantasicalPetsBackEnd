@@ -4,10 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default (req, res, next) => {
-  //Pull token out of header
   const token = req.header('x-auth-token');
 
-  //If not token is found
   if (!token) {
     return res.status(401).json({ errors: [{ msg: 'No Token, Auth Denied' }] });
   }
