@@ -94,4 +94,69 @@ router.delete("/:id", auth, async (req, res) => {
   }
 });
 
+// @route: POST /api/pet/aiDetails
+// @desc:  Generate pet name and description using Gemini API
+// @access: Public
+router.post("/aiDetails", async (req, res) => {
+  const { animal1, animal2 } = req.body;
+
+  const prompt = `Generate a creative name and a short, silly 2nd grade description (around 2-3 sentences) for a hybrid animal made from a ${animal1} and a ${animal2}. Provide the output as a JSON object with 'name' and 'description' fields.`;
+
+  ////////// code snippets from Gemini API
+  let chatHistory = [];
+  chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+  const payload = {
+    contents: chatHistory,
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "OBJECT",
+        properties: {
+          name: { type: "STRING" },
+          description: { type: "STRING" },
+        },
+        propertyOrdering: ["name", "description"],
+      },
+    },
+  };
+
+  const geminiApiKey = process.env.GEMINI_API_KEY;
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (
+      result.candidates &&
+      result.candidates.length > 0 &&
+      result.candidates[0].content &&
+      result.candidates[0].content.parts &&
+      result.candidates[0].content.parts.length > 0
+    ) {
+      const jsonString = result.candidates[0].content.parts[0].text;
+      const parsedJson = JSON.parse(jsonString);
+
+      if (parsedJson.name && parsedJson.description) {
+        return res.status(200).json(parsedJson);
+      } else {
+        return res
+          .status(500)
+          .json({ msg: "AI response missing name or description." });
+      }
+    } else {
+      return res.status(500).json({ msg: "AI did not return valid content." });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: "Server error generating AI details." });
+  }
+});
+
 export default router;

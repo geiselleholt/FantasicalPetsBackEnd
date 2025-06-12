@@ -1,10 +1,9 @@
 import express from "express";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import Image from "../models/imageSchema.mjs";
 import images from "../utilities/imageSeedData.mjs";
 
 dotenv.config();
-
 
 const router = express.Router();
 
@@ -29,34 +28,36 @@ router.post("/", async (req, res, next) => {
   if (existing) {
     return res.status(200).json({
       imageUrl: existing.imageUrl,
-      ImageId: existing._id,
+      defaultName: existing.defaultName || "",
+      defaultDescription: existing.defaultDescription || "",
     });
   }
 
-  ////////// code snippet from DeepAI API
-  const resp = await fetch("https://api.deepai.org/api/text2img", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "api-key": process.env.DEEPAI_API_KEY,
-    },
-    body: JSON.stringify({
-      text: `cartoon image of a cute ${animal1} / ${animal2} mix`,
-    }),
-  });
+  try {
+    ////////// code snippet from DeepAI API
+    const resp = await fetch("https://api.deepai.org/api/text2img", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": process.env.DEEPAI_API_KEY,
+      },
+      body: JSON.stringify({
+        text: `cartoon image of a cute ${animal1} / ${animal2} mix`,
+      }),
+    });
 
-  const data = await resp.json();
+    const data = await resp.json();
+    let newImageUrl = data.output_url;
 
-  let newImageUrl = data.output_url;
-
-  if (!newImageUrl) {
+    return res.status(200).json({
+      imageUrl: newImageUrl,
+      defaultName: "",
+      defaultDescription: "",
+    });
+  } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "DeepAI did not return a valid image" });
+    return res.status(500).json({ msg: "DeepAI did not return a valid image" });
   }
-
-  res.status(200).json({
-    imageUrl: newImageUrl,
-  });
 });
 
 // @route: GET /api/image/seed
@@ -68,10 +69,10 @@ router.get("/seed", async (req, res) => {
 
     await Image.create(images);
 
-    res.send("Seeded DB");
+    return res.send("Seeded DB");
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Server Error" });
+    return res.status(500).json({ msg: "Server Error" });
   }
 });
 

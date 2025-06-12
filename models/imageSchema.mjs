@@ -14,13 +14,14 @@ const imageSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  defaultName: {
+    type: String,
+  },
+  defaultDescription: {
+    type: String,
+  },
 });
 
-imageSchema.index(
-  { animal1: 1, animal2: 1 },
-  {
-    unique: true,
-  }
-);
+imageSchema.index({ animal1: 1, animal2: 1 });
 
 export default mongoose.model("Image", imageSchema);
