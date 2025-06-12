@@ -51,8 +51,8 @@ Create a practical MERN stack application that, solves problem, makes your life 
 - StackOverFlow, Gemini, Microsoft Copilot (formerly Bing, not the Copilot that spoon feeds you code because that's plagiarism) for helping debug the 1 million errors I made
 
 ### Wire Frame for Data Structure:
-- <img src="src/images/dataStructure.png" alt="Wireframe of Data Structure" width="400">
-- ![alt](dataStructure.png)
+<img src="src/images/dataStructure.png" alt="Wireframe of Data Structure" width="400">
+![alt](dataStructure.png)
 - I didn't stick with this but it was a good start
 
 ### Routes:
