@@ -13,12 +13,11 @@ const router = express.Router();
 //////////
 
 // @route: POST /api/pet
-// @desc:  CREATE new Pet for a user
+// @desc:  CREATE new Pet for the logged-in User
 // @access: Private
 router.post("/", auth, async (req, res) => {
   let { name, description, animal1, animal2, imageUrl } = req.body;
   try {
-    console.log(req.user);
     const userId = req.user.id;
 
     if (animal1 > animal2) {
@@ -53,7 +52,7 @@ router.post("/", auth, async (req, res) => {
 });
 
 // @route: GET /api/pet/user
-// @desc:  READ all pets for the logged-in user
+// @desc:  READ all pets for the logged-in User
 // @access: Private
 router.get("/user", auth, async (req, res) => {
   try {
@@ -67,7 +66,7 @@ router.get("/user", auth, async (req, res) => {
 });
 
 // @route: PUT /api/pet/:id
-// @desc:  UPDATE one pet
+// @desc:  UPDATE one Pet
 // @access: Private
 router.put("/:id", auth, async (req, res) => {
   try {
@@ -82,7 +81,7 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 // @route: DELETE /api/pet/:id
-// @desc:  DELETE one pet
+// @desc:  DELETE one Pet
 // @access: Private
 router.delete("/:id", auth, async (req, res) => {
   try {
@@ -95,7 +94,7 @@ router.delete("/:id", auth, async (req, res) => {
 });
 
 // @route: POST /api/pet/aiDetails
-// @desc:  Generate pet name and description using Gemini API
+// @desc:  Generate petName and petDescription using Gemini API
 // @access: Public
 router.post("/aiDetails", async (req, res) => {
   const { animal1, animal2 } = req.body;

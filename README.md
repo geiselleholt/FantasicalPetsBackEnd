@@ -41,11 +41,11 @@ Create a practical MERN stack application that, solves problem, makes your life 
 
 ### Acknowledgements
 
-- Gemini Flash 2.0 API for generating names and descriptions
+- Gemini Flash 2.0 API for generating Pet names and descriptions (SO COOL 😎)
 
   - https://ai.google.dev/gemini-api/docs/text-generation
 
-- DeepAI API for generating images
+- DeepAI API for generating images (Also SO COOL 😎)
 
   - https://deepai.org/docs#ai-image-generator
 
@@ -66,5 +66,16 @@ Create a practical MERN stack application that, solves problem, makes your life 
 
 ### Routes:
 
-| **_HTTP Method_** | **_Path_** | **_Description_** | **_Authentication Required_** |
-|--GET---|---/api/image---|---Find existing image or CREATE a new image---|---Public---|
+| METHOD | PATH                | DESCRIPTION                                      | AUTH    |
+| ------ | ------------------- | ------------------------------------------------ | ------- |
+| POST   | /api/image          | Find existing image or CREATE a new image        | Public  |
+| GET    | /api/image/seed     | SEED image data into DB                          | Public  |
+| POST   | /api/pet            | CREATE new Pet for a User                        | Private |
+| GET    | /api/pet/user       | READ all pets for a User                         | Private |
+| PUT    | /api/pet/:id        | UPDATE one Pet                                   | Private |
+| DELETE | /api/pet/:id        | DELETE one Pet                                   | Private |
+| POST   | /api/pet/aiDetails  | CREATE pet details using Gemini API              | Public  |
+| POST   | /api/user/signUp    | CREATE a token and signUp a User                 | Public  |
+| POST   | /api/user/signIn    | CREATE a token to authenticate and signIn a User | Public  |
+| POST   | /api/user/questions | Find User and return their security questions    | Public  |
+| POST   | /api/user/answers   | Verify security answers and signIn User          | Public  |

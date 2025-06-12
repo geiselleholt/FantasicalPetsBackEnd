@@ -61,7 +61,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // @route: GET /api/image/seed
-// @desc: Seed DB information
+// @desc: SEED image data into DB
 // @access: Public
 router.get("/seed", async (req, res) => {
   try {

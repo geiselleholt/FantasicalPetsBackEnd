@@ -16,7 +16,7 @@ const router = express.Router();
 ////////////
 
 // @route: POST /api/user/signUp
-// @desc:  CREATE a signUp user route
+// @desc:  CREATE a token and signUp a User
 // @access: Public
 router.post("/signUp", async (req, res) => {
   const { userName, password, securityQuestion1, securityQuestion2 } = req.body;
@@ -100,13 +100,13 @@ router.post("/signUp", async (req, res) => {
 });
 
 // @route: POST /api/user/signIn
-// @desc:  Authenticate user and log them in
+// @desc:  CREATE a token to authenticate and signIn a User
 // @access: Public
 router.post("/signIn", async (req, res) => {
   const { userName, password } = req.body;
 
   try {
-    const trimmedUserName = userName ? userName.trim() : "";
+    const normalizedUserName = userName ? userName.trim().toLowerCase() : "";
 
     if (!userName || !password) {
       return res.status(400).json({
@@ -114,7 +114,7 @@ router.post("/signIn", async (req, res) => {
       });
     }
 
-    let user = await User.findOne({ userName: trimmedUserName });
+    let user = await User.findOne({ userName: normalizedUserName });
     if (!user) {
       return res.status(400).json({ msg: "Invalid Credentials" });
     }
@@ -150,19 +150,18 @@ router.post("/signIn", async (req, res) => {
   }
 });
 
-// @route: POST /api/user/get-security-questions
-// @desc:  Find user by username and return their security questions
+// @route: POST /api/user/questions
+// @desc:  Find User and return their security questions
 // @access: Public
 router.post("/questions", async (req, res) => {
   const { userName } = req.body;
-  const trimmedUserName = userName ? userName.trim() : "";
-
+  const normalizedUserName = userName ? userName.trim().toLowerCase() : "";
   try {
-    if (!trimmedUserName) {
+    if (!normalizedUserName) {
       return res.status(400).json({ msg: "Username is required." });
     }
 
-    const user = await User.findOne({ userName: trimmedUserName });
+    const user = await User.findOne({ userName: normalizedUserName });
 
     if (!user) {
       return res.status(404).json({ msg: "Username not found" });
@@ -178,36 +177,36 @@ router.post("/questions", async (req, res) => {
   }
 });
 
-// @route: POST /api/user/verify-security-answers
-// @desc:  Verify security answers and log user in if correct
+// @route: POST /api/user/answers
+// @desc:  Verify security answers and signIn User
 // @access: Public
 router.post("/answers", async (req, res) => {
   const { userName, answer1, answer2 } = req.body;
-  const trimmedUserName = userName ? userName.trim() : "";
-  const trimmedAnswer1 = answer1 ? answer1.trim() : "";
-  const trimmedAnswer2 = answer2 ? answer2.trim() : "";
+  const normalizedUserName = userName ? userName.trim().toLowerCase() : "";
+  const normalizedAnswer1 = answer1 ? answer1.trim().toLowerCase() : "";
+  const normalizedAnswer2 = answer2 ? answer2.trim().toLowerCase() : "";
 
   try {
-    if (!trimmedUserName || (!trimmedAnswer1 && !trimmedAnswer2)) {
+    if (!normalizedUserName || (!normalizedAnswer1 && !normalizedAnswer2)) {
       return res
         .status(400)
         .json({ msg: "Username and at least one answer are required." });
     }
 
-    const user = await User.findOne({ userName: trimmedUserName });
+    const user = await User.findOne({ userName: normalizedUserName });
 
     let isAnswer1Correct = false;
     let isAnswer2Correct = false;
 
-    if (trimmedAnswer1) {
+    if (normalizedAnswer1) {
       isAnswer1Correct = await bcrypt.compare(
-        trimmedAnswer1,
+        normalizedAnswer1,
         user.securityQuestion1.answer
       );
     }
-    if (trimmedAnswer2) {
+    if (normalizedAnswer2) {
       isAnswer2Correct = await bcrypt.compare(
-        trimmedAnswer2,
+        normalizedAnswer2,
         user.securityQuestion2.answer
       );
     }
