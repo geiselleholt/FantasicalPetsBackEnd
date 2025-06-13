@@ -57,7 +57,7 @@ Create a practical MERN stack application that, solves problem, makes your life 
 
 - My TA Constance Nwaigwe for giving me direction and answering all my questions
 
-- StackOverFlow, Gemini, Microsoft Copilot (formerly Bing, not the Copilot that spoon feeds you code because that's plagiarism) for helping debug the 1 million errors I made
+- StackOverFlow, Gemini, Microsoft Copilot (formerly Bing, not the Copilot that spoon feeds you code because that's plagiarism) for helping debug the 1 million errors I made and for verbage for content
 
 ### Wire Frame for Data Structure:
 
