@@ -42,7 +42,7 @@ router.post("/", async (req, res, next) => {
         "api-key": process.env.DEEPAI_API_KEY,
       },
       body: JSON.stringify({
-        text: `cartoon image of a cute ${animal1} / ${animal2} mix`,
+        text: `cartoon image of a cute ${animal1} / ${animal2} hybrid`,
       }),
     });
 
@@ -63,17 +63,17 @@ router.post("/", async (req, res, next) => {
 // @route: GET /api/image/seed
 // @desc: SEED image data into DB
 // @access: Public
-router.get("/seed", async (req, res) => {
-  try {
-    await Image.deleteMany({});
+// router.get("/seed", async (req, res) => {
+//   try {
+//     await Image.deleteMany({});
 
-    await Image.create(images);
+//     await Image.create(images);
 
-    return res.send("Seeded DB");
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ msg: "Server Error" });
-  }
-});
+//     return res.send("Seeded DB");
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ msg: "Server Error" });
+//   }
+// });
 
 export default router;
