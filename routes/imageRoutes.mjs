@@ -42,12 +42,13 @@ router.post("/", async (req, res, next) => {
         "api-key": process.env.DEEPAI_API_KEY,
       },
       body: JSON.stringify({
-        text: `cartoon image of a cute ${animal1} / ${animal2} hybrid`,
+        text: `cartoon image of a cute ${animal1} / cute ${animal2} hybrid`,
       }),
     });
 
     const data = await resp.json();
-    let newImageUrl = data.output_url;
+    console.log(data);
+    let newImageUrl = data.share_url;
 
     return res.status(200).json({
       imageUrl: newImageUrl,
