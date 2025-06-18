@@ -17,6 +17,10 @@ const petSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  isFavorite: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export default mongoose.model("Pet", petSchema);
