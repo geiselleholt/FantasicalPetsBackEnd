@@ -61,6 +61,26 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+// @route: GET /api/image/random
+// @desc:  READ one random image
+// @access: Public
+router.get("/random", async (req, res) => {
+  try {
+    const randomImage = await Image.aggregate([
+      { $sample: { size: 1 } }
+    ]);
+
+    if (randomImage.length === 0) {
+      return res.status(404).json({ msg: "No images found in the database." });
+    }
+
+    res.status(200).json(randomImage[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server Error getting one random Image" });
+  }
+});
+
 // @route: GET /api/image/seed
 // @desc: SEED image data into DB
 // @access: Public
